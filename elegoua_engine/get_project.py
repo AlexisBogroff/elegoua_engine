@@ -1,3 +1,6 @@
+"""
+Define a project adapted for the student, manage project databases, manage project questions
+"""
 def eval_python_level(student_answer:dict):
     """
     Provide a score and complementary information about the student level
@@ -61,19 +64,5 @@ class DbManagement:
     def __init__(self):
         raise NotImplementedError
 
-    def create_db(self):
-        raise NotImplementedError
-    
-    def insert(self):
-        raise NotImplementedError
-
-    def update(self):
-        raise NotImplementedError
-
-    def delete(self):
-        raise NotImplementedError
-
     def select(self):
         raise NotImplementedError
-
-    
