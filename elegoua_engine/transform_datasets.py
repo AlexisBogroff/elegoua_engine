@@ -116,6 +116,7 @@ def add_missing_values(dataset, prop_na):
 def add_outliers(dataset, prop, cols=None):
     """
     Add outliers that can be detected using a IQR or Z-score method with threshold 2
+    tested 2023.01.01
     """
     # Use threshold way greater than classic threshold of 2 (or 1.6)
     THRESHOLD = 10
