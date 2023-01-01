@@ -9,9 +9,74 @@ import pandas as pd
 def load_dataset(path, delim=','):
     return pd.read_csv(path, delimiter=delim)
 
-def add_missing_values(dataset):
 
-    raise NotImplementedError
+def select_random_rows(dataset, num):
+    return np.random.choice(dataset.index, num)
+
+
+def select_random_columns(dataset, num):
+    return np.random.choice(dataset.columns, num)
+
+
+def compute_num_of_rows_from_prop(dataset, prop):
+    num_of_rows = round(dataset.shape[0] * prop)
+    return num_of_rows
+
+
+def compute_num_of_columns_from_prop(dataset, prop):
+    num_of_columns = round(dataset.shape[1] * prop)
+    return num_of_columns
+
+
+def add_nas(dataset, rows, cols):
+    dataset.loc[rows, cols] = np.nan
+
+
+def add_random_na_to_col(dataset, col, n_rows):
+    rows = select_random_rows(dataset, n_rows)
+    add_nas(dataset, rows, col)
+
+
+def add_missing_values_to_all_cols(dataset, props_na):
+    """ Add missing values at a specific proportion for each column """
+    for i_col, col in enumerate(dataset.columns):
+        n_rows = compute_num_of_rows_from_prop(dataset, props_na[i_col])
+        add_random_na_to_col(dataset, col, n_rows)
+
+
+def add_missing_values_everywhere(dataset, prop_na):
+    """ Add missing values anywhere based on the proportion specified """
+    n_rows = compute_num_of_rows_from_prop(dataset, prop_na)
+    n_cols = compute_num_of_columns_from_prop(dataset, prop_na)
+    cols_to_add_na = select_random_columns(dataset, n_cols)
+    for col in cols_to_add_na:
+        add_random_na_to_col(dataset, col, n_rows)
+
+
+def add_missing_values_to_specific_cols(dataset, props_na):
+    """ Add missing values at a specific proportion for a specified columns only """
+    for col, prop_na in props_na.items():
+        n_rows = compute_num_of_rows_from_prop(dataset, prop_na)
+        add_random_na_to_col(dataset, col, n_rows)
+
+
+def add_missing_values(dataset, prop_na):
+    """
+    Add a proportion of missing values to the dataset or to each column
+
+    args:
+        prop_na:
+        - float: affects linearly the whole dataframe
+        - list: affects each column based on the list values
+        - dictionnary: affects the specified columns
+    """
+    if isinstance(prop_na, float):
+        add_missing_values_everywhere(dataset, prop_na)
+    elif isinstance(prop_na, list):
+        add_missing_values_to_all_cols(dataset, prop_na)
+    elif isinstance(prop_na, dict):
+        add_missing_values_to_specific_cols(dataset, prop_na)
+
 
 def add_outliers(dataset):
     raise NotImplementedError
