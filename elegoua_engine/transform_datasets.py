@@ -113,8 +113,31 @@ def add_missing_values(dataset, prop_na):
         add_missing_values_to_specific_cols(dataset, prop_na)
 
 
-def add_outliers(dataset):
-    raise NotImplementedError
+def add_outliers(dataset, prop, cols=None):
+    """
+    Add outliers that can be detected using a IQR or Z-score method with threshold 2
+    """
+    # Use threshold way greater than classic threshold of 2 (or 1.6)
+    THRESHOLD = 10
+    
+    for col in cols:
+        num = compute_num_of_rows_from_prop(dataset, prop=prop)
+        rows = select_random_rows(dataset, num=num)
+        
+        mean = dataset[col].mean()
+        std = dataset[col].std()
+        bound_up = mean + THRESHOLD * std
+        bound_low = mean - THRESHOLD * std
+        
+        # Indicator: define the sign randomly (positive or negative)
+        rands = np.random.randint(0, 2, num)
+
+        # Compute value of each outlier
+        outliers_low = rands * bound_low - abs(dataset.loc[rows, col] * rands)
+        outliers_up = (1 - rands) * bound_up + abs(dataset.loc[rows, col] * (1 - rands))
+        
+        # Assign computed values to original dataset
+        dataset.loc[rows, col] = outliers_low + outliers_up
 
 
 def duplicate_column(dataset, column_name):

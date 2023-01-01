@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 import numpy as np
 from elegoua_engine import transform_datasets as td
+np.random.seed(42)
 
 
 class TestTransformDatasets:
@@ -85,6 +86,14 @@ class TestTransformDatasets:
     def test_add_missing_values_with_prop_as_float(self, test_df):
         td.add_missing_values(test_df, prop_na=.3)
         assert test_df.isna().sum().sum() == 90
+
+
+    def test_add_outliers(self, test_df):
+        td.add_outliers(test_df, prop=.1, cols=['a', 'c'])
+        ma_sup = test_df['a'] > (test_df.mean() + test_df.std() * 2)[0]
+        ma_inf = test_df['a'] < (test_df.mean() - test_df.std() * 2)[0]
+        assert ma_sup.sum() == 4
+        assert ma_inf.sum() == 6
 
 
     def test_add_missing_values_with_prop_as_list(self, test_df):
