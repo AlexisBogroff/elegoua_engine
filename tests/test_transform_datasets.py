@@ -31,40 +31,46 @@ class TestTransformDatasets:
         return self.df.copy()
 
 
+    @classmethod
+    def teardown_class(cls):
+        """ Clean up code after tests"""
+        del cls.df
+
+
     def test_select_random_rows_selects_the_right_number_of_rows(self):
-        result_10 = td.select_random_rows(self.df, 10)
-        result_50 = td.select_random_rows(self.df, 50)
+        result_10 = td._select_random_rows(self.df, 10)
+        result_50 = td._select_random_rows(self.df, 50)
         assert self.df.index.isin(result_10).sum() == 10
         assert self.df.index.isin(result_50).sum() == 50
 
 
     def test_select_random_columns_selects_the_right_number_of_cols(self):
-        result_2 = td.select_random_columns(self.df, 2)
-        result_5 = td.select_random_columns(self.df, 5)
+        result_2 = td._select_random_columns(self.df, 2)
+        result_5 = td._select_random_columns(self.df, 5)
         assert self.df.columns.isin(result_2).sum() == 2
         assert self.df.columns.isin(result_5).sum() == 5
 
 
     def test_compute_num_of_rows_from_prop(self):
-        result_10 = td.compute_num_of_rows_from_prop(self.df, .1)
-        result_50 = td.compute_num_of_rows_from_prop(self.df, .5)
-        result_80 = td.compute_num_of_rows_from_prop(self.df, .8)
+        result_10 = td._compute_num_of_rows_from_prop(self.df, .1)
+        result_50 = td._compute_num_of_rows_from_prop(self.df, .5)
+        result_80 = td._compute_num_of_rows_from_prop(self.df, .8)
         assert result_10 == 10
         assert result_50 == 50
         assert result_80 == 80
 
 
     def test_compute_num_of_columns_from_prop(self):
-        result_1 = td.compute_num_of_columns_from_prop(self.df, .1)
-        result_3 = td.compute_num_of_columns_from_prop(self.df, .3)
-        result_8 = td.compute_num_of_columns_from_prop(self.df, .8)
+        result_1 = td._compute_num_of_columns_from_prop(self.df, .1)
+        result_3 = td._compute_num_of_columns_from_prop(self.df, .3)
+        result_8 = td._compute_num_of_columns_from_prop(self.df, .8)
         assert result_1 == 1
         assert result_3 == 3
         assert result_8 == 8
 
 
     def test_add_random_na_to_col(self, test_df):
-        td.add_random_na_to_col(test_df, col='e', n_rows=10)
+        td._add_random_na_to_col(test_df, col='e', n_rows=10)
         assert test_df['e'].isna().sum() == 10
 
 
@@ -72,13 +78,13 @@ class TestTransformDatasets:
         # 30%: selects 3 columns out of 10
         # 30%: selects 30 rows out of 100
         # 3*30 = 90
-        td.add_missing_values_everywhere(test_df, prop_na=.3)
+        td._add_missing_values_everywhere(test_df, prop_na=.3)
         assert test_df.isna().sum().sum() == 90
 
 
     def test_add_missing_values_to_specific_cols(self, test_df):
         props_na = {'b': .2, 'g': .9}
-        td.add_missing_values_to_specific_cols(test_df, props_na)
+        td._add_missing_values_to_specific_cols(test_df, props_na)
         assert test_df['b'].isna().sum() == 20
         assert test_df['g'].isna().sum() == 90
 
@@ -112,7 +118,7 @@ class TestTransformDatasets:
 
     def test_add_missing_values_to_all_cols(self, test_df):
         props_na = [.2, .8, .1, .9, .5, .4, .3, .7, .9, .4]
-        td.add_missing_values_to_all_cols(test_df, props_na)
+        td._add_missing_values_to_all_cols(test_df, props_na)
         assert test_df['a'].isna().sum() == 20
         assert test_df['b'].isna().sum() == 80
         assert test_df['c'].isna().sum() == 10
@@ -120,41 +126,41 @@ class TestTransformDatasets:
 
 
     def test_add_nas(self, test_df):
-        td.add_nas(test_df, [1, 3, 5], ['a'])
-        td.add_nas(test_df, [4, 8, 1], ['g'])
+        td._add_nas(test_df, [1, 3, 5], ['a'])
+        td._add_nas(test_df, [4, 8, 1], ['g'])
         assert test_df.loc[[1, 3, 5], 'a'].isna().all()
         assert test_df.loc[[4, 8, 1], 'g'].isna().all()
         
 
     def test_select_rows_randomly_is_expected_size(self):
-        result_2 = td.select_rows_randomly(self.df, 2)
-        result_10 = td.select_rows_randomly(self.df, 10)
-        result_30 = td.select_rows_randomly(self.df, 30)
+        result_2 = td._select_rows_randomly(self.df, 2)
+        result_10 = td._select_rows_randomly(self.df, 10)
+        result_30 = td._select_rows_randomly(self.df, 30)
         assert result_2.shape[0] == 2
         assert result_10.shape[0] == 10
         assert result_30.shape[0] == 30
 
 
     def test_select_rows_randomly_is_within_df_rows(self):
-        result = td.select_rows_randomly(self.df, 10)
+        result = td._select_rows_randomly(self.df, 10)
         assert result.isin(self.df.index).all()
 
     
     def test_select_columns_randomly_is_expected_size(self):
-        result_2 = td.select_columns_randomly(self.df, 2)
-        result_8 = td.select_columns_randomly(self.df, 8)
+        result_2 = td._select_columns_randomly(self.df, 2)
+        result_8 = td._select_columns_randomly(self.df, 8)
         assert result_2.shape[0] == 2
         assert result_8.shape[0] == 8
 
     def test_select_columns_randomly_is_within_df_columns(self):
-        result = td.select_columns_randomly(self.df, 8)
+        result = td._select_columns_randomly(self.df, 8)
         assert result.isin(self.df.columns).all()
 
 
     def test_proportion_to_num_cols(self):
-        result_20_pct = td.proportion_to_num_cols(self.df, .2)
-        result_40_pct = td.proportion_to_num_cols(self.df, .4)
-        result_80_pct = td.proportion_to_num_cols(self.df, .8)
+        result_20_pct = td._proportion_to_num_cols(self.df, .2)
+        result_40_pct = td._proportion_to_num_cols(self.df, .4)
+        result_80_pct = td._proportion_to_num_cols(self.df, .8)
         expected_20_pct = round(self.df.shape[1] * .2)
         expected_40_pct = round(self.df.shape[1] * .4)
         expected_80_pct = round(self.df.shape[1] * .8)
@@ -174,7 +180,7 @@ class TestTransformDatasets:
 
 
     def test_add_empty_col_has_1_more_cols(self, test_df):
-        td.add_empty_col(test_df)
+        td._add_empty_col(test_df)
         assert test_df.shape[1] > self.df.shape[1]
 
 
@@ -188,7 +194,6 @@ class TestTransformDatasets:
         assert test_df.T.duplicated().any()
 
 
-    @classmethod
-    def teardown_class(cls):
-        """ Clean up code after tests"""
-        del cls.df
+    def test_remove_individuals(self, test_df):
+        td.remove_individuals(test_df, proportion_to_drop=.8)
+        assert test_df.shape[0] == 20
