@@ -8,8 +8,8 @@ transformations:
 - add_outliers
 - add_duplicate_variables
 - add_empty_columns
+- remove_individuals
 - remove_variables (not implemented)
-- remove_individuals (to test)
 - mess_up_columns_names (not implemented)
 - shuffle_columns (not implemented)
 - add_duplicate_individuals (not implemented)
@@ -23,7 +23,7 @@ def load_dataset(path, delim=','):
     return pd.read_csv(path, delimiter=delim)
 
 
-def add_missing_values(dataset, prop_na):
+def add_missing_values(dataset, prop_na=.3):
     """
     Add a proportion of missing values to the dataset or to each column
     tested 2023.01.01
@@ -42,7 +42,7 @@ def add_missing_values(dataset, prop_na):
         _add_missing_values_to_specific_cols(dataset, prop_na)
 
 
-def add_outliers(dataset, prop, cols=None):
+def add_outliers(dataset, prop=.05, cols=None):
     """
     Add outliers that can be detected using a IQR or Z-score method with threshold 2
     tested 2023.01.01
@@ -70,7 +70,7 @@ def add_outliers(dataset, prop, cols=None):
         dataset.loc[rows, col] = outliers_low + outliers_up
 
 
-def add_duplicate_variables(dataset:pd.DataFrame, proportion_to_duplicate=.1):
+def add_duplicate_variables(dataset:pd.DataFrame, proportion_to_duplicate=.01):
     """
     Add duplicate variables randomly
     tested 2022.12.31
@@ -81,7 +81,7 @@ def add_duplicate_variables(dataset:pd.DataFrame, proportion_to_duplicate=.1):
         _duplicate_column(dataset, col_name)
 
 
-def add_empty_columns(dataset:pd.DataFrame, proportion_to_add:float=.1):
+def add_empty_columns(dataset:pd.DataFrame, proportion_to_add:float=.01):
     """
     Add empty variables and shuffle columns order
     tested 2022.12.31
@@ -99,7 +99,7 @@ def remove_variables(dataset):
     raise NotImplementedError
 
 
-def remove_individuals(dataset, proportion_to_drop=.3):
+def remove_individuals(dataset, proportion_to_drop=.2):
     n_rows = _proportion_to_num_rows(dataset, proportion_to_drop)
     idx = _select_rows_randomly(dataset, n_rows)
     dataset.drop(idx, inplace=True)
