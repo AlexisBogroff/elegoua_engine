@@ -11,41 +11,72 @@ def load_dataset(path, delim=','):
 
 
 def select_random_rows(dataset, num):
-    return np.random.choice(dataset.index, num)
+    """ tested 2023.01.01 """
+    return np.random.choice(dataset.index, num, replace=False)
 
 
 def select_random_columns(dataset, num):
-    return np.random.choice(dataset.columns, num)
+    """ tested 2023.01.01 """
+    return np.random.choice(dataset.columns, num, replace=False)
 
 
 def compute_num_of_rows_from_prop(dataset, prop):
+    """ tested 2023.01.01 """
     num_of_rows = round(dataset.shape[0] * prop)
     return num_of_rows
 
 
 def compute_num_of_columns_from_prop(dataset, prop):
+    """ tested 2023.01.01 """
     num_of_columns = round(dataset.shape[1] * prop)
     return num_of_columns
 
 
 def add_nas(dataset, rows, cols):
+    """
+    Add missing values to specified rows and cols
+    tested 2023.01.01
+    
+    Case 1:
+    - multiple rows and a unique column
+    - multiple columns and a unique row
+    Case 2:
+    - multiple rows and multiple columns. This would add grids of NAs
+
+    args:
+        rows: list of rows names (not iloc)
+        cols: list of cols names (not iloc)
+    """
     dataset.loc[rows, cols] = np.nan
 
 
 def add_random_na_to_col(dataset, col, n_rows):
+    """
+    Add missing values to a specific column
+    tested 2023.01.01
+
+    args:
+        col: should be a col name (not iloc)
+    """
     rows = select_random_rows(dataset, n_rows)
     add_nas(dataset, rows, col)
 
 
 def add_missing_values_to_all_cols(dataset, props_na):
-    """ Add missing values at a specific proportion for each column """
+    """
+    Add missing values at a specific proportion for each column
+    tested 2023.01.01
+    """
     for i_col, col in enumerate(dataset.columns):
         n_rows = compute_num_of_rows_from_prop(dataset, props_na[i_col])
         add_random_na_to_col(dataset, col, n_rows)
 
 
 def add_missing_values_everywhere(dataset, prop_na):
-    """ Add missing values anywhere based on the proportion specified """
+    """
+    Add missing values anywhere based on the proportion specified
+    tested 2023.01.01
+    """
     n_rows = compute_num_of_rows_from_prop(dataset, prop_na)
     n_cols = compute_num_of_columns_from_prop(dataset, prop_na)
     cols_to_add_na = select_random_columns(dataset, n_cols)
@@ -54,7 +85,10 @@ def add_missing_values_everywhere(dataset, prop_na):
 
 
 def add_missing_values_to_specific_cols(dataset, props_na):
-    """ Add missing values at a specific proportion for a specified columns only """
+    """
+    Add missing values at a specific proportion for a specified columns only
+    tested 2023.01.01
+    """
     for col, prop_na in props_na.items():
         n_rows = compute_num_of_rows_from_prop(dataset, prop_na)
         add_random_na_to_col(dataset, col, n_rows)
@@ -63,6 +97,7 @@ def add_missing_values_to_specific_cols(dataset, props_na):
 def add_missing_values(dataset, prop_na):
     """
     Add a proportion of missing values to the dataset or to each column
+    tested 2023.01.01
 
     args:
         prop_na:
