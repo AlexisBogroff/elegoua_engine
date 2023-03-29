@@ -102,7 +102,7 @@ class Project:
                     break # found a CSV file, exit loop
         if dataset_file is None:
             print("No CSV files found.")
-            return
+            return self.select_dataset(subject, level)
         print(f"Extracted CSV file: {dataset_file}")
         return dataset_file
 
